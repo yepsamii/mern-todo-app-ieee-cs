@@ -2,6 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import todoRoutes from "./routes/todo.route.js";
 import { connectDB, disconnectDB } from "./config/db.js";
+import { requestLogger } from "./middleware/requestLogger.js";
+import { logger } from "./utils/logger.js";
 import cors from "cors";
 import path from "path";
 
@@ -22,6 +24,7 @@ app.use(
   })
 );
 app.use(express.json());
+app.use(requestLogger);
 
 app.use("/api/todos", todoRoutes);
 
@@ -36,7 +39,7 @@ if (process.env.NODE_ENV === "production"){
 
 app.listen(PORT, async () => {
     await connectDB();
-    console.log("Server started at http://localhost:" + PORT);
+    logger.info(`Server started at http://localhost:${PORT}`);
 });
 
 process.on("SIGINT", disconnectDB); //Ctrl+C
